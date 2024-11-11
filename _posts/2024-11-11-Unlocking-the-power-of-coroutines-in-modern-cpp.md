@@ -6,15 +6,13 @@ tags: [coroutines]     # TAG names should always be lowercase
 toc: true
 ---
 
-# Introduction
-
 The release of C++20 brought a plethora of new features to the language, but perhaps none as transformative as coroutines. Coroutines introduce a powerful abstraction for asynchronous programming, enabling developers to write code that is both efficient and easy to understand. In this blog post, we’ll dive deep into the world of coroutines, exploring how they work under the hood and how you can leverage them in your projects.
 
-# What Are Coroutines?
+## What Are Coroutines?
 
 At their core, coroutines are generalizations of subroutines (functions). While a regular function runs to completion once called, a coroutine can suspend execution to be resumed later, maintaining its state between suspensions. This capability makes coroutines exceptionally useful for tasks like asynchronous I/O, concurrency, and stateful generators.
 
-# The Anatomy of a Coroutine
+## The Anatomy of a Coroutine
 
 To understand coroutines in C++, we need to look at several key components:
  1. Coroutine Functions: These are functions that use the co_keywords (`co_await`, `co_yield`, `co_return`).
@@ -22,13 +20,13 @@ To understand coroutines in C++, we need to look at several key components:
  3. Awaitables and Awaiters: Types that can be `co_awaited`, defining how suspension and resumption occur.
  4. Coroutine Handles: Objects that provide low-level control over coroutine execution.
 
-# A Simple Coroutine Example
+## A Simple Coroutine Example
 
 Let’s start with a minimal coroutine:
 
-```C++
-# include <coroutine>
-# include <iostream>
+```c++
+#include <coroutine>
+#include <iostream>
 
 struct MyCoroutine {
     struct promise_type {
@@ -53,7 +51,7 @@ int main() {
 
 In this example, `simple_coroutine` is a coroutine function because it uses `co_return`. The `promise_type` defines how the coroutine behaves.
 
-# Diving Deeper: Understanding Promise Types
+## Diving Deeper: Understanding Promise Types
 
 The promise type is a user-defined type that controls the behavior of a coroutine. When a coroutine is called, it creates a promise object that manages its execution.
 
@@ -65,14 +63,14 @@ Key members of a promise type include:
 * `return_void()` or `return_value()`: Defines what happens when co_return is called.
 * `unhandled_exception()`: Handles exceptions thrown within the coroutine.
 
-## Customizing Suspension Behavior
+### Customizing Suspension Behavior
 
 By returning different types from `initial_suspend()` and `final_suspend()`, you can control when the coroutine suspends. Common return types include:
 
 * `std::suspend_always`: The coroutine always suspends at this point.
 * `std::suspend_never`: The coroutine never suspends at this point.
 
-## Awaitables and Awaiters
+### Awaitables and Awaiters
 
 The co_await operator is used to suspend a coroutine until a given awaitable is ready. An awaitable is any type that can be awaited, and it must provide an awaiter that defines the suspension behavior.
 
@@ -82,11 +80,11 @@ An awaiter must have the following methods:
 * `void await_suspend(std::coroutine_handle<> h)`: Called when the coroutine suspends.
 * `auto await_resume()`: Called when the coroutine resumes; returns the result of the `co_await` expression.
 
-## Creating a Custom Awaitable
+### Creating a Custom Awaitable
 
 Let’s create a simple awaitable that suspends the coroutine for a fixed number of times:
 
-```C++
+```c++
 struct SuspendFixed {
     int count;
     bool await_ready() { return count <= 0; }
@@ -100,7 +98,7 @@ struct SuspendFixed {
 
 Usage in a coroutine:
 
-```C++
+```c++
 MyCoroutine suspend_example() {
     co_await SuspendFixed{3};
     std::cout << "Resumed after suspending 3 times." << std::endl;
@@ -108,14 +106,14 @@ MyCoroutine suspend_example() {
 }
 ```
 
-# Real-World Application: Asynchronous I/O
+## Real-World Application: Asynchronous I/O
 
 One of the most powerful applications of coroutines is asynchronous I/O. By leveraging coroutines, you can write code that looks synchronous but runs asynchronously.
 
-## Example with `std::future`
+### Example with `std::future`
 
-```C++
-# include <future>
+```c++
+#include <future>
 
 std::future<void> async_task() {
     std::cout << "Starting async task..." << std::endl;
@@ -129,19 +127,19 @@ std::future<void> async_task() {
 
 In this example, `async_task` is a coroutine that waits for an asynchronous operation to complete before resuming.
 
-# Best Practices and Considerations
+## Best Practices and Considerations
 
 * Understand the Lifespan: Be cautious with the lifetime of variables captured by the coroutine. Since execution is suspended and resumed, you must ensure that any referenced data remains valid.
 * Exception Handling: Always implement unhandled_exception() in your promise type to handle exceptions within the coroutine.
 * Performance: While coroutines offer performance benefits over traditional threading models, misuse can lead to overhead. Profile your application to understand the impact.
 
-# Conclusion
+## Conclusion
 
 Coroutines in C++20 are a powerful tool that can simplify asynchronous programming and improve performance. By understanding the underlying mechanics—such as promise types, awaitables, and coroutine handles—you can harness the full potential of coroutines in your applications.
 
 As with any advanced feature, coroutines come with a learning curve. However, the investment pays off by enabling you to write cleaner, more maintainable code for complex asynchronous tasks.
 
-References
+## References
 
 * [C++20 Coroutines Proposal (P0912R5)](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0912r5.pdf)
 * [cppreference.com: Coroutines](https://en.cppreference.com/w/cpp/language/coroutines)
